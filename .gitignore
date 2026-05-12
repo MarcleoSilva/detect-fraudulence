@@ -8,7 +8,7 @@ node_modules
 .env
 
 /generated/prisma
-data/database.json
+data/references.json
 # Logs
 logs
 *.log
