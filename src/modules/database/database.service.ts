@@ -12,11 +12,13 @@ export class DatabaseService implements OnModuleInit {
 
 
     private db: any;
+    private reference: any;
     async onModuleInit() {
         const { JSONFilePreset } = await import('lowdb/node');
         const defaultData: DatabaseSchema = { transactions: [] }
 
         this.db = await JSONFilePreset('data/database.json', defaultData);
+        this.reference = await JSONFilePreset('data/references.json', defaultData)
     };
 
     getTransactions(): TransactionEntity[] {
