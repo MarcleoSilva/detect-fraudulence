@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { TransactionEntity } from '../transaction/transaction.entity';
 import { nanoid } from 'nanoid';
 import { TransactionDto } from '../transaction/transaction.dto';
+import { VectorizedData, VectorResponse } from 'src/common/types/vector-response.dto';
 
 export interface DatabaseSchema {
     transactions: TransactionEntity[];
@@ -39,4 +40,9 @@ export class DatabaseService implements OnModuleInit {
 
         return newTransaction;
     };
+
+    async newTransaction(transaction: TransactionDto): Promise<VectorizedData> {
+        
+
+    }
 }

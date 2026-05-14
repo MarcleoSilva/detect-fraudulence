@@ -1,4 +1,4 @@
-export interface VectorDatabase {
+export interface VectorizedData {
     vector: number[];
     label: "legit" | "fraud";
 }

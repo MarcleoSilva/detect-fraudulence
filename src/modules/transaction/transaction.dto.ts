@@ -7,6 +7,9 @@ import type { TransactionInfo } from "src/common/types/transaction-info.type";
 
 export class TransactionDto {
     @IsNotEmpty()
+    id!: string
+
+    @IsNotEmpty()
     transactionInfo!: TransactionInfo;
     
     @IsNotEmpty()
