@@ -71,8 +71,20 @@ export class AnalysisService {
         ]
         return vector;
     }
-
     
+    vectorSearchManhattanDistance(firstItem: number[], secondItem: number[]): number{
 
+        let finalSum: number = 0;
+        for (let a = 0; a < firstItem.length; a++) {
+            for (let b = 0; b < secondItem.length; b++) {
+                if (a === b) {
+                    finalSum = finalSum + Math.abs(firstItem[a] - secondItem[b])
+                }
+            }
+        }
+        return finalSum;
+    }
+
+    //vectorSearchAgainstDatabase(currentVector: number[], )
     
 }
