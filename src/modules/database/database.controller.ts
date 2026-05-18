@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
 import { DatabaseService } from './database.service';
 import type { TransactionEntity } from '../transaction/transaction.entity';
@@ -9,9 +9,9 @@ export class DatabaseController {
     constructor(private readonly database: DatabaseService){}
 
     @Public()
-    @Post('register')
+    @Get('list-vector')
     @HttpCode(HttpStatus.OK)
-    register(@Body() dto: TransactionEntity){
-        return this.database.addTransaction(dto);
+    async listVectors() {
+        return this.database.getReferences();
     }
 }

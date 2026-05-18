@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Label {
+  legit
+  fraud
+}
+model VectorDatabase {
+  vector Float[] @unique
+  label Label
+}

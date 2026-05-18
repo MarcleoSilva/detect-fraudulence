@@ -1,48 +1,46 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { TransactionEntity } from '../transaction/transaction.entity';
-import { nanoid } from 'nanoid';
-import { TransactionDto } from '../transaction/transaction.dto';
-import { VectorizedData, VectorResponse } from 'src/common/types/vector-response.dto';
-
-export interface DatabaseSchema {
-    transactions: TransactionEntity[];
-}
+import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
+import { parser } from 'stream-json';
+import { streamArray } from 'stream-json/streamers/StreamArray';
+import { VectorizedData } from 'src/common/types/vector-response.dto';
 
 @Injectable()
-export class DatabaseService implements OnModuleInit {
+export class DatabaseService {
 
+    async getReferences(limit: number = 1): Promise<VectorizedData[]> {
+        return new Promise((resolve, reject) => {
+            const results: VectorizedData[] = [];
+            
+            // 1. Create the source read stream
+            const fileStream = fs.createReadStream('data/references.json');
+            
+            // 2. Build the pipeline (using 'as any' to bypass TS stream-json strictness)
+            const pipeline = fileStream
+                .pipe(parser() as any)
+                .pipe(streamArray() as any);
 
-    private db: any;
-    private reference: any;
-    async onModuleInit() {
-        const { JSONFilePreset } = await import('lowdb/node');
-        const defaultData: DatabaseSchema = { transactions: [] }
+            pipeline.on('data', (chunk: any) => {
+                results.push(chunk.value);
 
-        this.db = await JSONFilePreset('data/database.json', defaultData);
-        this.reference = await JSONFilePreset('data/references.json', defaultData)
-    };
+                if (results.length >= limit) {
+                    // 3. FIX: Destroy the source file stream directly
+                    fileStream.destroy(); 
+                    resolve(results);
+                }
+            });
 
-    getTransactions(): TransactionEntity[] {
-        return this.db.data.transactions;
-    };
+            pipeline.on('end', () => {
+                resolve(results);
+            });
 
-    async addTransaction(transaction: TransactionDto): Promise<TransactionEntity> {
-
-        const id = nanoid(12)
-        
-        const newTransaction: TransactionEntity = {
-            ...transaction,
-            id: id,
-        }
-        await this.db.update((data: DatabaseSchema) => {
-            data.transactions.push(newTransaction);
-        })
-
-        return newTransaction;
-    };
-
-    async newTransaction(transaction: TransactionDto): Promise<VectorizedData> {
-        
-
+            pipeline.on('error', (err: any) => {
+                reject(err);
+            });
+            
+            // Handle file stream errors just in case the file is missing
+            fileStream.on('error', (err: any) => {
+                reject(err);
+            });
+        });
     }
 }
